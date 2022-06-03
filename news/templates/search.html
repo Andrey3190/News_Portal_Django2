@@ -6,53 +6,48 @@ News
 {% endblock title %}
 
 {% block content %}
-    <h1>Все новости - {{news | length}}</h1>
+    <h1>Поиск новостей</h1>
     <h3>{{ time_now | date:'d M Y' }}</h3>
-
+    <hr>
     <form action="" method="get">
         {{ filterset.form.as_p }}
-        <input type="submit" value="Найти" />
-     </form>
+        <input type="submit" value="Найти"/>
+    </form>
     <hr>
     {% if news %}
         <table>
             <tr>
-                <td>Категория</td>
                 <td>Заголовок</td>
                 <td>Дата публикации</td>
                 <td>Текст статьи</td>
-
             </tr>
-
-            {% for post in news %}
+            {% for news in search.qs %}
             <tr>
-                <td>{{ post.category }}</td>
                 <td>{{ post.name | censor }}</td>
                 <td>{{ post.data | date:'d M Y H:i' }}</td>
                 <td>{{ post.description | truncatewords:10 | censor }}</td>
             </tr>
             {% endfor %}
         </table>
-
     {% else %}
         <h2>Новостей нет!</h2>
     {% endif %}
 
     {% if page_obj.has_previous %}
-        <a href="?{% url_replace page=1 %}">1</a>
+        <a href="?page=1">1</a>
         {% if page_obj.previous_page_number != 1 %}
             ...
-            <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+            <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
         {% endif %}
     {% endif %}
 
     {{ page_obj.number }}
 
     {% if page_obj.has_next %}
-        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+        <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
         {% if paginator.num_pages != page_obj.next_page_number %}
             ...
-            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
         {% endif %}
     {% endif %}
 
