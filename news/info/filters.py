@@ -27,3 +27,16 @@ class NewsFilter(FilterSet):
             'name':['icontains'],
             'description':['icontains'],
         }
+
+
+class CategoryFilter(FilterSet):
+    category = ModelChoiceFilter(
+        field_name='name',
+        queryset=Category.objects.all(),
+        label='Category',
+        empty_label='Все категории',
+    )
+
+    class Meta:
+        model = News
+        fields = ['category']

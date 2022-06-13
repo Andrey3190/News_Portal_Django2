@@ -1,6 +1,6 @@
 from django.db import models
 from django.urls import reverse
-
+from django.contrib.auth.models import User
 
 class News(models.Model):
     name = models.CharField(
@@ -29,7 +29,8 @@ class News(models.Model):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=50, unique=True)
+    subscribers = models.ManyToManyField(User, default='')
 
     def __str__(self):
         return self.name.title()

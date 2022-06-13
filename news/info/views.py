@@ -2,14 +2,15 @@ from django.urls import reverse_lazy
 from datetime import datetime
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import News
-from .filters import NewsFilter
+from .models import Category
+from .filters import NewsFilter, CategoryFilter
 from .forms import NewsForm
 from .forms import UserForm
+from .forms import SubscribeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.mixins import PermissionRequiredMixin
-
-
-
+from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
 
 class NewsList(ListView):
     model = News
@@ -86,5 +87,34 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
 
     def get_object(self, **kwargs):
         return self.request.user
+
+
+class CategoryList(LoginRequiredMixin, ListView):
+    model = Category
+    template_name = 'category.html'
+    context_object_name = 'category'
+    queryset = Category.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+@login_required
+def subscribe_category(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    if request.user not in category.subscribers.all():
+        category.subscribers.add(user)
+    return redirect('/news/category/')
+
+@login_required
+def unsubscribe_category(request, pk):
+    user = request.user
+    category = Category.objects.get(id=pk)
+    if request.user in category.subscribers.all():
+        category.subscribers.remove(user)
+    return redirect('/news/category/')
+
+
 
 
