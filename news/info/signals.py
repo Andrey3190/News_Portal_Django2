@@ -1,10 +1,7 @@
 from django.db.models.signals import m2m_changed
 from django.dispatch import receiver  # импортируем нужный декоратор
-from django.shortcuts import redirect
 from .models import News
-from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives
-from news.news.tasks import notify_new_post_with_celery
+from news.info.tasks import notify_new_post_with_celery
 
 #@receiver(m2m_changed, sender=News.category)
 #def notify_users_post(sender, instance, **kwargs):
