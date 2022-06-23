@@ -171,3 +171,9 @@ DEFAULT_FROM_EMAIL = 'andrey-samorukoff@yandex.ru'
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 
 APSCHEDULER_RUN_NOW_TIMEOUT = 25
+
+CELERY_BROKER_URL = 'redis://default:5h8tbZ8mZH9SMx4ebCDLDJAzCevqnHIF@redis-17721.c61.us-east-1-3.ec2.cloud.redislabs.com:17721/0'
+CELERY_RESULT_BACKEND = 'redis://default:5h8tbZ8mZH9SMx4ebCDLDJAzCevqnHIF@redis-17721.c61.us-east-1-3.ec2.cloud.redislabs.com:17721/0'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

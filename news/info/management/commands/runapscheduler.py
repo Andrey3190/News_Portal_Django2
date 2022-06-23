@@ -11,68 +11,59 @@ from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
 from news.info.models import News, Category
 from datetime import datetime as date_time
+from news.news.tasks import notify_subscribers_weekly
 
 logger = logging.getLogger(__name__)
 
-def news_sender():
-    for category in Category.objects.all():
-        news_from_each_category = []
-        week_number_last = date_time.now().isocalendar()[1] -1
-        for news in News.objects.filter(id=category.id, datetime_week=week_number_last).values('pk',
-                                                                                               'headline',
-                                                                                               'datetime',
-                                                                                               'category_Type'):
-            date_format = news.get('datetime').strftime("%m/%d/%Y")
-            new = (f' http://127.0.0.1:8000/news/{news.get("pk")}, {news.get("headline")}, '
-                   f'Категория: {news.get("category_Type")}, Дата создания: {date_format}')
-            news_from_each_category.append(new)
-
-        subscribers = category.subscribers.all()
-
-        for subscriber in subscribers:
-            html_content = render_to_string(
-                'news/mail_sender.html', {'user': subscriber,
-                                          'text': news_from_each_category,
-                                          'category_name': category.article_text,
-                                          'week_number_last': week_number_last}
-            )
-
-            msg = EmailMultiAlternatives(
-                subject=f'Здравствуй, {subscriber.username}, новые статьи за прошлую неделю в вашем разделе!',
-                from_email='andrey-samorukoff@yandex.ru',
-                to=[subscriber.email]
-            )
-            msg.attach_alternative(html_content, 'text/html')
-            msg.send()
+def my_job():
+    notify_subscribers_weekly()
+    #print('hello from job')
 
 
+# функция, которая будет удалять неактуальные задачи
 def delete_old_job_executions(max_age=604_800):
+    """This job deletes all apscheduler job executions older than `max_age` from the database."""
     DjangoJobExecution.objects.delete_old_job_executions(max_age)
+
 
 class Command(BaseCommand):
     help = "Runs apscheduler."
 
     def handle(self, *args, **options):
         scheduler = BlockingScheduler(timezone=settings.TIME_ZONE)
-        scheduler.add_jobstore(DjangoJobStore(), 'default')
+        scheduler.add_jobstore(DjangoJobStore(), "default")
+
+        # добавляем работу нашему задачнику
         scheduler.add_job(
-            news_sender,
+            my_job,
+            # для проверки отправки временно задано время срабатывания каждые 10 секунд
+            #trigger=CronTrigger(second="*/10"),
+            # отправляем письма подписчикам в понедельник в 8 утра
             trigger=CronTrigger(day_of_week="mon", hour="08", minute="00"),
-            id='news_sender',
+            id="my_job",  # уникальный айди
             max_instances=1,
             replace_existing=True,
         )
+        logger.info("Added job 'my_job'.")
 
+        scheduler.add_job(
+            delete_old_job_executions,
+            trigger=CronTrigger(
+                day_of_week="mon", hour="00", minute="00"
+            ),
+            # Каждую неделю будут удаляться старые задачи, которые либо не удалось выполнить, либо уже выполнять не надо.
+            id="delete_old_job_executions",
+            max_instances=1,
+            replace_existing=True,
+        )
         logger.info(
             "Added weekly job: 'delete_old_job_executions'."
         )
 
         try:
-            logger.info('Starting scheduler')
-            print('Starting scheduler...')
+            logger.info("Starting scheduler...")
             scheduler.start()
         except KeyboardInterrupt:
             logger.info("Stopping scheduler...")
             scheduler.shutdown()
-            print('Stopping scheduler...')
             logger.info("Scheduler shut down successfully!")
