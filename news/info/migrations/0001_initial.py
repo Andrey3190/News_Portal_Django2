@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=1000, unique=True)),
                 ('data', models.DateTimeField(auto_now_add=True)),
                 ('description', models.TextField()),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='news', to='info.category')),
+                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='news_portal', to='info.category')),
             ],
         ),
     ]

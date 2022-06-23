@@ -4,14 +4,10 @@ from django.conf import settings
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
-from django.core.mail import EmailMultiAlternatives
 from django.core.management.base import BaseCommand
-from django.template.loader import render_to_string
 from django_apscheduler.jobstores import DjangoJobStore
 from django_apscheduler.models import DjangoJobExecution
-from news.info.models import News, Category
-from datetime import datetime as date_time
-from news.news.tasks import notify_subscribers_weekly
+from news.info.tasks import notify_subscribers_weekly
 
 logger = logging.getLogger(__name__)
 

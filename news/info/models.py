@@ -16,7 +16,7 @@ class News(models.Model):
     category = models.ForeignKey(
         to='Category',
         on_delete=models.CASCADE,
-        related_name='news',
+        related_name='news_portal',
     )
 
 

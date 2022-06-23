@@ -1,4 +1,4 @@
-"""news URL Configuration
+"""news_portal URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.0/topics/http/urls/
@@ -20,7 +20,7 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('pages/', include('django.contrib.flatpages.urls')),
-    path('news/', include('info.urls')),
+    path('news_portal/', include('info.urls')),
     path('articles/', include('info.urls')),
     path('sign/', include('sign.urls')),
     path('', include('protect.urls')),
