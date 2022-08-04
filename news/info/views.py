@@ -16,8 +16,8 @@ class NewsList(ListView):
     model = News
     ordering = '-data'
     queryset = News.objects.order_by('data')
-    template_name = 'news.html'
-    context_object_name = 'news'
+    template_name = 'news_portal.html'
+    context_object_name = 'news_portal'
     paginate_by = 10
 
 
@@ -105,7 +105,7 @@ def subscribe_category(request, pk):
     category = Category.objects.get(id=pk)
     if request.user not in category.subscribers.all():
         category.subscribers.add(user)
-    return redirect('/news/category/')
+    return redirect('/news_portal/category/')
 
 @login_required
 def unsubscribe_category(request, pk):
@@ -113,7 +113,7 @@ def unsubscribe_category(request, pk):
     category = Category.objects.get(id=pk)
     if request.user in category.subscribers.all():
         category.subscribers.remove(user)
-    return redirect('/news/category/')
+    return redirect('/news_portal/category/')
 
 
 

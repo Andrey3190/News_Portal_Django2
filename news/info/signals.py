@@ -13,7 +13,7 @@ from news.info.tasks import notify_new_post_with_celery
 #            print()
 #            print('Адресат:', subscriber.email)
 #            html_content = render_to_string(
-#                'news/mail.html', {'post': instance, 'text': sub_text[:50], 'category': category.article_text})#
+#                'news_portal/mail.html', {'post': instance, 'text': sub_text[:50], 'category': category.article_text})#
 
 #            msg = EmailMultiAlternatives(
 #                subject=f'Здравствуй, {subscriber.username}. Новая статья в вашем разделе!',
@@ -29,7 +29,7 @@ from news.info.tasks import notify_new_post_with_celery
 #            print()
 
 
-#        return redirect('/news/')
+#        return redirect('/news_portal/')
 
 
 # Отправка уведомлений подписчикам (по категори поста) при создании нового поста (асинхронный метод с Celery)
